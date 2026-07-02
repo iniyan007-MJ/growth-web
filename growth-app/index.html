@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Growth 🚀</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="bg-mesh">
+    <div class="mesh-orb mo1"></div>
+    <div class="mesh-orb mo2"></div>
+    <div class="mesh-orb mo3"></div>
+  </div>
+
+  <!-- Top-right controls -->
+  <div style="position:fixed;top:1rem;right:1rem;z-index:100;display:flex;gap:0.5rem;align-items:center;">
+    <div class="theme-switcher">
+      <button class="theme-dot td-girls-dot" onclick="applyTheme('girls')" title="Girls 🌸"></button>
+      <button class="theme-dot td-purple-dot" onclick="applyTheme('purple')" title="Purple"></button>
+      <button class="theme-dot td-girls"  onclick="applyTheme('girls')"  title="Girls 🌸"></button>
+      <button class="theme-dot td-navy"   onclick="applyTheme('navy')"   title="Navy"></button>
+      <button class="theme-dot td-teal"   onclick="applyTheme('teal')"   title="Teal"></button>
+    </div>
+    <button class="dark-toggle-btn" id="dark-toggle" onclick="toggleDark()">🌙</button>
+  </div>
+
+  <div class="page-wrap auth-root">
+    <div class="auth-outer">
+      <div class="auth-orb orb1"></div>
+      <div class="auth-orb orb2"></div>
+      <div class="auth-orb orb3"></div>
+      <div class="auth-card">
+        <div class="auth-hero">
+          <div class="auth-app-icon">🚀</div>
+          <h1 class="auth-title">Daily Growth</h1>
+          <p class="auth-sub">Track pannuda. Level up pannuda. 🔥</p>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login"    onclick="switchTab('login')">Login</button>
+          <button class="auth-tab"        id="tab-register" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- Login -->
+        <div class="auth-body" id="login-form">
+          <div class="input-group">
+            <label>Email Address</label>
+            <div class="input-row">
+              <input type="email" id="login-email" placeholder="yourname@gmail.com" autocomplete="email"/>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <div class="input-row">
+              <input type="password" id="login-pass" placeholder="Your password" autocomplete="current-password"/>
+              <button class="toggle-pass" data-target="login-pass">👁️</button>
+            </div>
+          </div>
+          <span class="field-err" id="login-err"></span>
+          <button class="btn-auth" id="login-btn" onclick="doLogin()">🚀 Login</button>
+          <p class="auth-hint">New? Register tab la create panniko!</p>
+        </div>
+
+        <!-- Register -->
+        <div class="auth-body" id="register-form" style="display:none;">
+          <div class="input-group">
+            <label>Username</label>
+            <div class="input-row">
+              <input type="text" id="reg-username" placeholder="e.g. Keerthana" autocomplete="username"/>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Email</label>
+            <div class="input-row">
+              <input type="email" id="reg-email" placeholder="yourname@gmail.com" autocomplete="email"/>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <div class="input-row">
+              <input type="password" id="register-pass" placeholder="Min 6 characters" autocomplete="new-password"/>
+              <button class="toggle-pass" data-target="register-pass">👁️</button>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>I am</label>
+            <div class="gender-select">
+              <button class="gender-btn" data-gender="male">👦 Male</button>
+              <button class="gender-btn active" data-gender="female">👧 Female</button>
+            </div>
+          </div>
+          <span class="field-err" id="reg-err"></span>
+          <span class="field-err" id="reg-ok"></span>
+          <button class="btn-auth" id="reg-btn" onclick="doRegister()">🌟 Create Account</button>
+          <p class="auth-hint">Already account iruka? Login tab!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

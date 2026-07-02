@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekly Review 📊 — Daily Growth</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div class="bg-mesh">
+  <div class="mesh-orb mo1"></div>
+  <div class="mesh-orb mo2"></div>
+  <div class="mesh-orb mo3"></div>
+</div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🚀</div>
+      <span class="sb-logo-text">Daily Growth</span>
+    </div>
+    <nav class="sb-nav">
+      <a href="dashboard.html" class="sb-link">
+        <span class="sb-link-icon">📋</span><span class="sb-link-label">Dashboard</span>
+      </a>
+      <a href="weekly.html" class="sb-link active">
+        <span class="sb-link-icon">📊</span><span class="sb-link-label">Weekly Review</span>
+      </a>
+      <a href="news.html" class="sb-link">
+        <span class="sb-link-icon">🌐</span><span class="sb-link-label">AI &amp; IT News</span>
+      </a>
+    </nav>
+    <div class="sb-section-label">🤖 AI World</div>
+    <div class="sb-news" id="news-ai"><div class="news-loading">⏳ Loading...</div></div>
+    <div class="sb-section-label">💻 IT World</div>
+    <div class="sb-news" id="news-it"><div class="news-loading">⏳ Loading...</div></div>
+    <button class="btn-news-refresh" onclick="loadNews()">🔄 Refresh</button>
+    <div class="sb-section-label">Theme</div>
+    <div class="sb-themes">
+      <button class="sb-theme-btn active" onclick="applyTheme('purple')"><span class="td-dot purple"></span>Purple</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('girls')"><span class="td-dot girls"></span>Girls 🌸</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('navy')"><span class="td-dot navy"></span>Navy</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('teal')"><span class="td-dot teal"></span>Teal</button>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-user-card">
+        <div class="sb-avatar-sm">📊</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="week-user">—</div>
+          <div class="sb-user-sub">Weekly stats</div>
+        </div>
+      </div>
+      <button class="sb-logout" onclick="doLogout()">⏻ Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="main-topbar">
+      <div class="topbar-left">
+        <button class="sb-toggle" onclick="toggleSidebar()">☰</button>
+        <div>
+          <h2 class="page-title">📊 Weekly Review</h2>
+          <p class="page-sub">Last 7 days performance</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="api-counter-badge api-ok" id="api-badge">
+          <span class="api-dot"></span><span id="api-label">API: 0/20</span>
+        </div>
+        <button class="dark-toggle-btn" id="dark-toggle" onclick="toggleDark()">🌙</button>
+      </div>
+    </header>
+
+    <div class="weekly-body">
+      <div class="stats-ribbon" style="margin-bottom:1.2rem;">
+        <div class="stat-card sc-gold">
+          <div class="stat-icon">⭐</div>
+          <div><div class="stat-val" id="w-total">0</div><div class="stat-label">Total Score</div></div>
+        </div>
+        <div class="stat-card sc-purple">
+          <div class="stat-icon">📅</div>
+          <div><div class="stat-val" id="w-active">0/7</div><div class="stat-label">Active Days</div></div>
+        </div>
+        <div class="stat-card sc-teal">
+          <div class="stat-icon">📈</div>
+          <div><div class="stat-val" id="w-avg">0</div><div class="stat-label">Avg Score</div></div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="stat-icon">✅</div>
+          <div><div class="stat-val" id="w-tasks">0</div><div class="stat-label">Tasks Done</div></div>
+        </div>
+      </div>
+
+      <div class="insight-banner">
+        <span class="insight-icon">💡</span>
+        <div>
+          <div class="insight-badge">This week's insight</div>
+          <span class="insight-text" id="w-insight">Analyzing...</span>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-bottom:.8rem;">
+        <p class="section-title">📈 Charts</p>
+        <span class="section-badge">Click any chart for insights</span>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card" onclick="openChartModal('score')">
+          <div class="chart-card-head"><h4>⭐ Daily Score</h4><span class="chart-click-hint">Click →</span></div>
+          <div class="chart-wrap"><canvas id="score-chart"></canvas></div>
+        </div>
+        <div class="chart-card" onclick="openChartModal('energy')">
+          <div class="chart-card-head"><h4>🌸 Energy Level</h4><span class="chart-click-hint">Click →</span></div>
+          <div class="chart-wrap"><canvas id="energy-chart"></canvas></div>
+        </div>
+        <div class="chart-card" onclick="openChartModal('focus')">
+          <div class="chart-card-head"><h4>🎯 Focus Level</h4><span class="chart-click-hint">Click →</span></div>
+          <div class="chart-wrap"><canvas id="focus-chart"></canvas></div>
+        </div>
+        <div class="chart-card" onclick="openChartModal('insta')">
+          <div class="chart-card-head"><h4>📵 Instagram</h4><span class="chart-click-hint">Click →</span></div>
+          <div class="chart-wrap"><canvas id="insta-chart"></canvas></div>
+        </div>
+        <div class="chart-card" onclick="openChartModal('practice')">
+          <div class="chart-card-head"><h4>📝 Practice</h4><span class="chart-click-hint">Click →</span></div>
+          <div class="chart-wrap"><canvas id="practice-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin:1.3rem 0 .8rem;">
+        <p class="section-title">📋 Day by Day</p>
+      </div>
+      <div class="day-cards-grid" id="day-cards"></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="chart-modal">
+  <div class="modal-box chart-modal-box">
+    <button class="modal-close" onclick="closeChartModal()">✕</button>
+    <h3 class="modal-title" id="chart-modal-title"></h3>
+    <div class="modal-chart-wrap"><canvas id="modal-chart-canvas"></canvas></div>
+    <div class="insight-grid" style="margin-top:.9rem;">
+      <div class="insight-box"><div class="insight-box-title">✅ Good points</div><div class="insight-box-text" id="modal-good"></div></div>
+      <div class="insight-box"><div class="insight-box-title">🚀 To improve</div><div class="insight-box-text" id="modal-improve"></div></div>
+      <div class="insight-box"><div class="insight-box-title">🎯 Focus area</div><div class="insight-box-text" id="modal-focus"></div></div>
+      <div class="insight-box"><div class="insight-box-title">📈 Key insight</div><div class="insight-box-text" id="modal-key"></div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+<script src="js/weekly.js"></script>
+<script>
+async function loadNews() {
+  const aiEl=document.getElementById('news-ai'),itEl=document.getElementById('news-it');
+  if(aiEl)aiEl.innerHTML='<div class="news-loading">⏳ Fetching...</div>';
+  if(itEl)itEl.innerHTML='<div class="news-loading">⏳ Fetching...</div>';
+  try{
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+APP_CONFIG.ai.apiKey,
+      {method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({contents:[{parts:[{text:'Give 3 recent AI headlines and 3 IT headlines from 2025.\nReturn ONLY valid JSON. No markdown.\n{"ai_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}],"it_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}]}'}]}]})});
+    const data=await res.json();
+    const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const p=JSON.parse(text.replace(/```json|```/g,'').trim());
+    if(aiEl&&p.ai_news)aiEl.innerHTML=p.ai_news.map(n=>`<div class="news-card"><span class="news-tag ai">🤖 AI</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`).join('');
+    if(itEl&&p.it_news)itEl.innerHTML=p.it_news.map(n=>`<div class="news-card"><span class="news-tag it">💻 IT</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`).join('');
+  }catch(e){
+    if(aiEl)aiEl.innerHTML='<p style="font-size:.72rem;color:var(--text4);padding:.4rem;">Failed 😅</p>';
+    if(itEl)itEl.innerHTML='<p style="font-size:.72rem;color:var(--text4);padding:.4rem;">Failed 😅</p>';
+  }
+}
+window.addEventListener('DOMContentLoaded',()=>setTimeout(loadNews,1500));
+</script>
+<script>
+window.addEventListener("DOMContentLoaded",()=>{if(typeof updateApiUI==="function")updateApiUI();});
+</script>
+</body>
+</html>

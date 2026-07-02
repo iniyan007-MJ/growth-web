@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Growth — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css"/>
+</head>
+<body>
+<div class="bg-mesh">
+  <div class="mesh-orb mo1"></div>
+  <div class="mesh-orb mo2"></div>
+  <div class="mesh-orb mo3"></div>
+</div>
+
+<div class="app-shell">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🚀</div>
+      <span class="sb-logo-text">Daily Growth</span>
+    </div>
+
+    <nav class="sb-nav">
+      <a href="dashboard.html" class="sb-link active">
+        <span class="sb-link-icon">📋</span><span class="sb-link-label">Dashboard</span>
+      </a>
+      <a href="weekly.html" class="sb-link">
+        <span class="sb-link-icon">📊</span><span class="sb-link-label">Weekly Review</span>
+      </a>
+      <a href="news.html" class="sb-link">
+        <span class="sb-link-icon">🌐</span><span class="sb-link-label">AI &amp; IT News</span>
+      </a>
+    </nav>
+
+    <!-- Issue 3 FIX: single combined AI & IT news section -->
+    <div class="sb-section-label">🌐 AI &amp; IT News <a href="news.html" style="font-size:.6rem;color:var(--ac-m);margin-left:.3rem;font-weight:700;">See all →</a></div>
+    <div class="sb-news" id="sb-news-combined"><div class="news-loading">Loading...</div></div>
+
+    <div class="sb-section-label">Theme</div>
+    <div class="sb-themes">
+      <button class="sb-theme-btn active" onclick="applyTheme('purple')"><span class="td-dot purple"></span>Purple</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('girls')"><span class="td-dot girls"></span>Girls 🌸</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('navy')"><span class="td-dot navy"></span>Navy</button>
+      <button class="sb-theme-btn"        onclick="applyTheme('teal')"><span class="td-dot teal"></span>Teal</button>
+    </div>
+
+    <div class="sb-bottom">
+      <div class="sb-user-card" onclick="openProfileModal()" title="Edit Profile">
+        <div class="sb-avatar" id="sb-avatar"></div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sb-username">...</div>
+          <div class="sb-user-sub">✏️ Edit Profile</div>
+        </div>
+      </div>
+      <button class="sb-logout" onclick="doLogout()">⏻ Logout</button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main-content">
+    <header class="main-topbar">
+      <div class="topbar-left">
+        <button class="sb-toggle" onclick="toggleSidebar()">☰</button>
+        <div>
+          <p class="greeting" id="greeting">Loading... 🚀</p>
+          <div class="date-strip" id="date-strip"></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="quote-pill"><p id="daily-quote">...</p></div>
+        <div class="topbar-actions">
+          <div class="api-counter-badge api-ok" id="api-badge">
+            <span class="api-dot"></span><span id="api-label">API: 0/20</span>
+          </div>
+          <button class="dark-toggle-btn" id="dark-toggle" onclick="toggleDark()">🌙</button>
+          <span class="save-status new" id="save-status">✦ New</span>
+          <button class="btn-save" id="save-btn">💾 Save</button>
+          <button class="btn-reward" id="reward-btn" onclick="openReward()" style="display:none;">🏆 Reward!</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="dash-body">
+      <!-- Stats ribbon -->
+      <div class="stats-ribbon">
+        <div class="stat-card sc-purple">
+          <div class="stat-icon">📋</div>
+          <div><div class="stat-val" id="stat-total">0</div><div class="stat-label">Tasks</div></div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="stat-icon">✅</div>
+          <div><div class="stat-val" id="stat-done">0</div><div class="stat-label">Done</div></div>
+        </div>
+        <div class="stat-card sc-gold">
+          <div class="stat-icon">⭐</div>
+          <div><div class="stat-val" id="score-total">0</div><div class="stat-label">Score</div></div>
+        </div>
+        <div class="score-ribbon-card">
+          <div class="score-ribbon-head">
+            <span class="score-title">⭐ Today's Score</span>
+            <div class="score-pills">
+              <span class="score-pill sp-q">Q: <b id="score-base">0</b></span>
+              <span class="score-pill sp-t">Bonus: <b id="score-bonus">0</b></span>
+              <span class="score-pill sp-total"><b id="score-total-2">0</b>pts</span>
+            </div>
+          </div>
+          <div class="score-track"><div class="score-fill" id="score-bar-fill"></div></div>
+          <div class="score-sub">
+            <span class="reward-hint" id="reward-hint">Complete panna score earn aagum! 🎁</span>
+            <span class="score-pct" id="score-pct">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-columns">
+        <!-- LEFT -->
+        <div class="col-main">
+          <div class="progress-card">
+            <!-- SVG gradient def -->
+            <svg width="0" height="0" style="position:absolute;">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--g1)"/>
+                  <stop offset="100%" stop-color="var(--g2)"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="ring-wrap">
+              <svg viewBox="0 0 82 82" width="82" height="82">
+                <circle class="ring-bg" cx="41" cy="41" r="32"/>
+                <circle class="ring-fg" id="ring-fg" cx="41" cy="41" r="32" stroke-dasharray="201" stroke-dashoffset="201"/>
+              </svg>
+              <div class="ring-text" id="ring-pct">0%</div>
+            </div>
+            <div class="ring-info">
+              <h3>Today's Progress 💪</h3>
+              <p id="progress-label">Questions answer pannu! 🚀</p>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <p class="section-title">🌟 Today's Check-in</p>
+          </div>
+          <div id="questions-container"></div>
+
+          <div class="section-header" style="margin-top:1.3rem;">
+            <p class="section-title">⚡ Extra Tasks</p>
+            <span class="section-badge">+5 bonus each</span>
+          </div>
+          <div class="add-box">
+            <div class="add-row">
+              <input class="add-input" id="act-input" placeholder="Add an extra task..."/>
+              <button class="btn-add" onclick="addTask()">+ Add</button>
+            </div>
+            <div class="cat-row">
+              <button class="cat-chip active" data-cat="study"    onclick="selectCat(this)">📚 Study</button>
+              <button class="cat-chip"        data-cat="health"   onclick="selectCat(this)">🏃 Health</button>
+              <button class="cat-chip"        data-cat="selfcare" onclick="selectCat(this)">🧘 Self Care</button>
+              <button class="cat-chip"        data-cat="other"    onclick="selectCat(this)">⚡ Other</button>
+            </div>
+          </div>
+          <div class="task-list" id="task-list">
+            <div class="empty-state"><span>⚡</span><p>Extra tasks illai!<br>Add pannunga.</p></div>
+          </div>
+        </div>
+
+        <!-- RIGHT sidebar cards -->
+        <div class="col-side">
+          <div class="side-card">
+            <p class="section-title" style="margin-bottom:.7rem;">📔 Mood Journal</p>
+            <textarea class="mood-textarea" id="mood-journal"
+              placeholder="How was your day? Enna feel aaguthu? 💭"
+              onblur="markDirty()"></textarea>
+          </div>
+
+          <div class="side-card">
+            <p class="section-title" style="margin-bottom:.7rem;">👥 Friend Accountability</p>
+            <div class="friend-code-box">
+              <span class="friend-code-label">Your Code</span>
+              <span class="friend-code-val" id="friend-code">—</span>
+              <button class="btn-icon-copy" onclick="copyFriendCode()" title="Copy">📋</button>
+            </div>
+            <div class="friend-row">
+              <input class="friend-input" id="friend-input" placeholder="Friend's code..." maxlength="8"/>
+              <button class="btn-compare" onclick="compareFriend()">Compare 🏆</button>
+            </div>
+            <p class="friend-hint">Share your code to compare scores!</p>
+          </div>
+
+          <div class="side-card" id="ai-section">
+            <div class="word-tabs-row">
+              <p class="section-title" style="margin:0;">🧠 English Word</p>
+              <div class="word-tabs">
+                <button class="word-tab active" id="wtab-fetch"  onclick="switchWordTab('fetch')">New</button>
+                <button class="word-tab"        id="wtab-bank"   onclick="switchWordTab('bank')">Bank 📚</button>
+                <button class="word-tab"        id="wtab-search" onclick="switchWordTab('search')">Ask 🤖</button>
+              </div>
+            </div>
+            <!-- Fetch -->
+            <div id="wt-fetch">
+              <div class="word-fetch-row">
+                <span class="word-count-badge" id="word-count-badge">0/5 today</span>
+                <button class="btn-ai-fetch" id="ai-fetch-btn" onclick="fetchWordOfDay()">✨ New Word</button>
+              </div>
+              <div class="word-card" id="word-card">
+                <p style="font-size:.8rem;color:var(--text4);font-weight:500;">Click "New Word" — AI will suggest! 🤖</p>
+              </div>
+            </div>
+            <!-- Bank -->
+            <div id="wt-bank" style="display:none;">
+              <p style="font-size:.65rem;color:var(--text4);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;">Last 10 words learned</p>
+              <div id="word-bank-list"></div>
+            </div>
+            <!-- Search -->
+            <div id="wt-search" style="display:none;">
+              <div class="ai-search-box">
+                <input class="ai-search-input" id="ai-search-input"
+                  placeholder="Ask anything... 🤖"
+                  onkeydown="if(event.key==='Enter')doAiSearch()"/>
+                <button class="btn-ai-search" onclick="doAiSearch()">Ask →</button>
+              </div>
+              <div id="ai-search-output" class="ai-search-output">
+                <p style="font-size:.78rem;color:var(--text4);">Type a question and press Enter!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="reward-modal">
+  <div class="modal-box" style="text-align:center;">
+    <button class="modal-close" onclick="closeReward()">✕</button>
+    <div id="reward-modal-content"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="compare-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCompare()">✕</button>
+    <div id="compare-content"></div>
+  </div>
+</div>
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal-box profile-modal-box">
+    <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    <h3 class="modal-title">👤 My Profile</h3>
+    <div class="profile-tabs">
+      <button class="profile-tab active" id="ptab-avatar" onclick="switchPTab('avatar')">🖼️ Avatar</button>
+      <button class="profile-tab"        id="ptab-info"   onclick="switchPTab('info')">✏️ Edit Info</button>
+    </div>
+    <!-- Avatar tab -->
+    <div id="profile-tab-avatar">
+      <p class="profile-sec-label">Choose avatar</p>
+      <div class="avatar-grid" id="avatar-grid"></div>
+      <div class="upload-section">
+        <button class="btn-upload" onclick="triggerUpload()">📷 Upload &amp; Crop Photo</button>
+      </div>
+      <div id="crop-zone" style="display:none;">
+        <p class="profile-sec-label" style="margin-top:.6rem;">✂️ Crop your photo</p>
+        <div class="crop-container"><img id="crop-img" src="" alt="crop preview"/></div>
+        <div class="crop-actions">
+          <button class="btn-crop-ok"     onclick="confirmCrop()">✅ Use This</button>
+          <button class="btn-crop-cancel" onclick="cancelCrop()">✕ Cancel</button>
+        </div>
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)"/>
+    </div>
+    <!-- Info tab -->
+    <div id="profile-tab-info" style="display:none;">
+      <div class="profile-edit-group">
+        <label class="profile-edit-label">Username</label>
+        <input class="profile-edit-input" id="edit-username" type="text" placeholder="Your name"/>
+      </div>
+      <div class="profile-edit-group">
+        <label class="profile-edit-label">Email <span class="label-note">(verification sent if changed)</span></label>
+        <input class="profile-edit-input" id="edit-email" type="email" placeholder="yourname@gmail.com"/>
+      </div>
+      <div class="profile-edit-group">
+        <label class="profile-edit-label">New Password <span class="label-note">(blank = no change)</span></label>
+        <div style="position:relative;">
+          <input class="profile-edit-input" id="edit-password" type="password" placeholder="Min 6 characters" style="width:100%;padding-right:2.5rem;"/>
+          <button class="toggle-pass" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);" onclick="toggleEditPass()">👁️</button>
+        </div>
+      </div>
+      <div class="profile-edit-group">
+        <label class="profile-edit-label">I am</label>
+        <div class="gender-select">
+          <button class="gender-btn" id="gender-male"   data-gender="male"   onclick="selectGender('male')">👦 Male</button>
+          <button class="gender-btn" id="gender-female" data-gender="female" onclick="selectGender('female')">👧 Female</button>
+        </div>
+      </div>
+      <span class="field-err"         id="profile-err" style="display:none;"></span>
+      <span class="field-err success" id="profile-ok"  style="display:none;"></span>
+      <button class="btn-save-profile" id="save-profile-btn" onclick="saveProfileInfo()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/quotes.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/profile.js"></script>
+
+
+<script>
+// ── Sidebar news (compact, cached) ──────────────────────────
+const SB_NEWS_KEY = 'dg_news_data';
+const SB_NEWS_DAY = 'dg_news_day';
+
+function renderSidebarNews(data) {
+  const aiEl = document.getElementById('sb-news-ai');
+  const itEl = document.getElementById('sb-news-it');
+  if (!data) return;
+  if (aiEl && data.ai_news) {
+    aiEl.innerHTML = data.ai_news.slice(0,2).map(n =>
+      `<div class="news-card" onclick="window.location='news.html'"><span class="news-tag ai">🤖 AI</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`
+    ).join('') + '<a href="news.html" class="btn-news-refresh">See all AI news →</a>';
+  }
+  if (itEl && data.it_news) {
+    itEl.innerHTML = data.it_news.slice(0,2).map(n =>
+      `<div class="news-card" onclick="window.location='news.html'"><span class="news-tag it">💻 IT</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`
+    ).join('') + '<a href="news.html" class="btn-news-refresh">See all IT news →</a>';
+  }
+}
+
+async function loadSidebarNews() {
+  const today   = new Date().toISOString().slice(0,10);
+  const cached  = localStorage.getItem(SB_NEWS_KEY);
+  const cachedDay = localStorage.getItem(SB_NEWS_DAY);
+
+  // Use cache if same day
+  if (cachedDay === today && cached) {
+    renderSidebarNews(JSON.parse(cached));
+    return;
+  }
+
+  // Fetch once per day
+  try {
+    if (typeof addApiCall === 'function') addApiCall();
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + APP_CONFIG.ai.apiKey,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text:
+          'Give 4 AI world news and 4 IT world news from 2025 (very recent, brief titles). Return ONLY valid JSON. No markdown.\n{"ai_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}],"it_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}]}'
+        }] }] }) }
+    );
+    const data = await res.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    localStorage.setItem(SB_NEWS_KEY, JSON.stringify(parsed));
+    localStorage.setItem(SB_NEWS_DAY, today);
+    renderSidebarNews(parsed);
+  } catch(e) {
+    const aiEl = document.getElementById('sb-news-ai');
+    const itEl = document.getElementById('sb-news-it');
+    if (aiEl) aiEl.innerHTML = '<a href="news.html" class="btn-news-refresh">View full news page →</a>';
+    if (itEl) itEl.innerHTML = '';
+  }
+}
+
+// Load after main dashboard init
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (typeof updateApiUI === 'function') updateApiUI();
+    loadSidebarNews();
+  }, 2500);
+});
+</script>
+
+<script>
+// ════════════════════════════════════════
+//  DASHBOARD FIXES — All 8 bugs
+// ════════════════════════════════════════
+
+// BUG 4 FIX: doLogout defined here so sidebar button works
+async function doLogout() {
+  await sb.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+// BUG 3 FIX: Combined AI & IT news, once per day cache
+const _NEWS_KEY = 'dg_news_data';
+const _NEWS_DAY = 'dg_news_day';
+
+function _renderSidebarNews(data) {
+  const el = document.getElementById('sb-news-combined');
+  if (!el || !data) return;
+  const aiItems = (data.ai_news || []).slice(0,2);
+  const itItems = (data.it_news || []).slice(0,2);
+  const all = [
+    ...aiItems.map(n => `<div class="news-card" onclick="window.location='news.html'"><span class="news-tag ai">🤖 AI</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`),
+    ...itItems.map(n => `<div class="news-card" onclick="window.location='news.html'"><span class="news-tag it">💻 IT</span><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></div>`),
+  ];
+  el.innerHTML = all.join('') + '<a href="news.html" class="btn-news-refresh" style="display:block;text-align:center;padding:.4rem;margin-top:.3rem;">See all news →</a>';
+}
+
+async function _loadSidebarNews() {
+  const today = new Date().toISOString().slice(0,10);
+  const cached = localStorage.getItem(_NEWS_KEY);
+  const cachedDay = localStorage.getItem(_NEWS_DAY);
+
+  // BUG 2 FIX: Use cache if same day — only ONE API call per day
+  if (cachedDay === today && cached) {
+    _renderSidebarNews(JSON.parse(cached));
+    return;
+  }
+
+  try {
+    // BUG 7 FIX: Use addApiCall from auth.js (loaded above)
+    if (typeof addApiCall === 'function') addApiCall();
+
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + APP_CONFIG.ai.apiKey,
+      { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text:
+          'Give 3 recent AI world news and 3 recent IT world news from 2025.\nReturn ONLY valid JSON no markdown.\n{"ai_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}],"it_news":[{"title":"string","time":"string"},{"title":"string","time":"string"},{"title":"string","time":"string"}]}'
+        }] }] })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error?.message || 'API failed');
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Empty response');
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    localStorage.setItem(_NEWS_KEY, JSON.stringify(parsed));
+    localStorage.setItem(_NEWS_DAY, today);
+    _renderSidebarNews(parsed);
+  } catch(e) {
+    const el = document.getElementById('sb-news-combined');
+    if (el) el.innerHTML = '<a href="news.html" class="btn-news-refresh" style="display:block;text-align:center;">📰 View full news page →</a>';
+    console.warn('Sidebar news failed:', e.message);
+  }
+}
+
+// Init after dashboard loads
+window.addEventListener('DOMContentLoaded', () => {
+  // BUG 7 FIX: update API UI after auth.js defines updateApiUI
+  setTimeout(() => {
+    if (typeof updateApiUI === 'function') updateApiUI();
+    _loadSidebarNews();
+  }, 1800);
+});
+</script>
+</body>
+</html>
